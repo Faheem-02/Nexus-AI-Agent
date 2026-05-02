@@ -1,202 +1,204 @@
-# Nexus AI Agent (Mini Project - 1)
+# 🚀 Nexus AI Agent System
 
-A lightweight full-stack AI agent project with:
-- **Python backend** (FastAPI) for planning + execution
-- **React frontend** for submitting goals and viewing results
-- **Tool-based execution pipeline** with browser search support and safe fallbacks
+A modular full-stack AI agent that can **plan, decide, and execute tasks** using multi-tier execution strategies (fast responses + real browser interaction).
 
-The project is designed to demonstrate a clean, modular agent loop:
-`Goal -> Plan -> Execute Steps -> Return Results`
+---
 
-## Project Intent
+## ✨ Highlights
 
-This system accepts a user goal, generates a structured plan using an LLM, executes each step through tool adapters, and returns a machine-readable response that the UI displays.
+* 🧠 **AI Planning System** (LLM + structured steps)
+* ⚙️ **Execution Engine** with control loop + retries
+* 🌐 **Browser Automation** using Playwright
+* ⚡ **Fast Mode** for instant responses
+* 🔌 **Tool-based Architecture** (plug-and-play tools)
+* 🛡️ **Fallback-safe system** (never crashes)
 
-Primary objective:
-- Use real API-based planning when API key and credits are valid.
-- Use mock/fallback behavior only when required (missing/invalid key, exhausted quota, or tool-level runtime fallback).
+---
 
-## Repository Structure
+## 🧩 System Overview
 
 ```text
-Mini Project - 1/
-|- README.md
-|- requirements.txt
-`- ai-agent/
-   |- api/
-   |  `- main.py               # FastAPI app and /run-agent endpoint
-   |- planner/
-   |  `- planner.py            # LLM planning + fallback logic
-   |- executor/
-   |  `- executor.py           # Tool selection and execution strategy
-   |- control_loop/
-   |  `- loop.py               # Step-by-step loop with retry and limits
-   |- tools/
-   |  |- base_tool.py          # Tool contract/interface
-   |  |- browser_tool.py       # Browser tool wrapper
-   |  `- browser_adapter.py    # Playwright browser search implementation
-   |- schemas/
-   |  |- action_schema.py      # Action schema
-   |  `- plan_schema.py        # Plan/Step schema
-   |- config/
-   |  `- settings.py           # Environment-driven settings
-   |- .env                     # Local environment variables (not for commit)
-   `- ai-agent-ui/
-      |- src/App.js            # Main frontend screen and API call
-      `- package.json          # Frontend dependencies/scripts
+User Input
+   ↓
+Planner (LLM / Mock)
+   ↓
+Executor (Strategy Layer)
+   ↓
+Tools (Browser / Fast Mode)
+   ↓
+Results
 ```
 
-## How the System Works
+---
 
-1. Frontend posts a `goal` to backend endpoint `POST /run-agent`.
-2. `Planner` generates a structured plan (`steps[]`) with OpenAI API.
-3. `run_loop` executes each step using `Executor`.
-4. `Executor` selects a tool/mode and runs it.
-5. Backend returns both `plan` and `results` as JSON.
+## 🎯 Problem This Solves
 
-## API and Fallback Behavior
+Most AI apps:
 
-Planner behavior in `ai-agent/planner/planner.py`:
-- If API key is available and valid, planning uses OpenAI.
-- If API key is missing, invalid, or quota is exhausted, planner returns a mock plan fallback.
-- Non-auth/non-quota runtime errors are raised instead of silently hiding real failures.
+* Only generate responses ❌
+* Cannot execute real-world tasks ❌
 
-This keeps API as the primary mode and mock as a controlled safety fallback.
+This system introduces:
 
-## Prerequisites
+> ✅ **AI that can plan + act + execute using tools**
 
-- Python 3.10+ recommended
-- Node.js 18+ and npm
-- Internet access for API/tool usage
-- OpenAI API key (for primary planning mode)
+---
 
-## Setup Instructions
+## 🏗️ Architecture
 
-### 1) Backend setup (PowerShell)
+```text
+backend/
+  ├── api/              # FastAPI endpoints
+  ├── planner/          # Goal → Plan
+  ├── executor/         # Strategy + tool selection
+  ├── control_loop/     # Step execution + retry
+  ├── tools/            # Tool implementations
+  ├── schemas/          # Data contracts
+  └── config/           # Environment settings
 
-From repository root:
+frontend/
+  └── React UI for interaction
+```
 
-```powershell
+---
+
+## ⚙️ How It Works
+
+1. User submits a goal from frontend
+2. Planner generates structured steps
+3. Control loop executes steps sequentially
+4. Executor selects execution strategy
+5. Tools perform real or fallback actions
+6. Results returned to UI
+
+---
+
+## 🧪 Example
+
+### Input
+
+```json
+{
+  "goal": "Find latest AI tools"
+}
+```
+
+### Output
+
+```json
+{
+  "plan": {...},
+  "results": [...]
+}
+```
+
+---
+
+## ⚡ Execution Modes
+
+| Mode            | Description                             |
+| --------------- | --------------------------------------- |
+| ⚡ Fast Mode     | Instant response (no browser)           |
+| 🌐 Browser Mode | Real-world search via Playwright        |
+| 🧠 Future Mode  | Advanced agents (browser-harness, APIs) |
+
+---
+
+## 🛠️ Tech Stack
+
+* **Backend:** FastAPI, Python
+* **Frontend:** React
+* **Automation:** Playwright
+* **AI:** OpenAI (optional / fallback supported)
+
+---
+
+## 🚀 Setup
+
+### Backend
+
+```bash
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 playwright install
 ```
 
-Create/update `ai-agent/.env`:
+Create `.env`:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_KEY=your_key_here
 MAX_STEPS=20
 RETRY_LIMIT=3
-ENABLE_BROWSER_TOOL=true
-ENABLE_GOOGLE_TOOL=false
 ```
 
-Run backend:
+Run:
 
-```powershell
-cd ai-agent
+```bash
 uvicorn api.main:app --reload
 ```
 
-Backend URL: `http://127.0.0.1:8000`
+---
 
-### 2) Frontend setup
+### Frontend
 
-In a new terminal:
-
-```powershell
-cd ai-agent\ai-agent-ui
+```bash
+cd frontend
 npm install
 npm start
 ```
 
-Frontend URL: `http://localhost:3000`
+---
 
-## Running the Project
+## 🔗 API Endpoint
 
-1. Start backend (`uvicorn api.main:app --reload` inside `ai-agent`).
-2. Start frontend (`npm start` inside `ai-agent/ai-agent-ui`).
-3. Enter a goal in UI and click **Run Agent**.
-4. Inspect JSON output (`plan` + `results`) in the frontend.
-
-## Key Files and Responsibilities
-
-- `ai-agent/api/main.py`
-  - Exposes `POST /run-agent`.
-  - Creates planner/executor and orchestrates end-to-end run.
-
-- `ai-agent/planner/planner.py`
-  - Converts user goal into structured plan.
-  - Contains API-first behavior and fallback conditions.
-
-- `ai-agent/control_loop/loop.py`
-  - Executes steps sequentially with max-step and retry controls.
-
-- `ai-agent/executor/executor.py`
-  - Chooses strategy/tool for each step and returns normalized result.
-
-- `ai-agent/tools/browser_adapter.py`
-  - Uses Playwright for real browser-backed search.
-  - Returns adapter-level fallback text if runtime browsing fails.
-
-- `ai-agent/ai-agent-ui/src/App.js`
-  - Collects user goal and calls backend endpoint.
-  - Displays result payload in formatted JSON.
-
-## API Contract
-
-### Request
-`POST /run-agent`
-
-```json
-{
-  "goal": "Find latest information about X"
-}
+```
+POST /run-agent
 ```
 
-### Response
+---
 
-```json
-{
-  "plan": {
-    "steps": [
-      {
-        "id": "1",
-        "task": "Search for information",
-        "tool": "browser",
-        "input": "..."
-      }
-    ]
-  },
-  "results": [
-    {
-      "status": "success",
-      "tool": "browser",
-      "action": "search",
-      "result": "..."
-    }
-  ]
-}
-```
+## 🛡️ Fallback Design
 
-## Troubleshooting
+* No API key → mock planning
+* Browser failure → safe fallback
+* System never crashes
 
-- **Frontend shows connection error**
-  - Confirm backend is running on `127.0.0.1:8000`.
+---
 
-- **Planner not using API**
-  - Verify `OPENAI_API_KEY` in `ai-agent/.env`.
-  - Check API key validity and quota/credits.
+## 🧠 Key Concepts Implemented
 
-- **Browser search returns mock-like text**
-  - Ensure Playwright browsers are installed (`playwright install`).
-  - Confirm environment/network allows browser automation.
+* Control Loop Execution
+* Strategy Layer Decision Making
+* Tool Abstraction
+* Adapter Pattern
+* Multi-tier Execution System
 
-## Notes for Development
+---
 
-- Keep `.env` private and never commit secrets.
-- Keep backend and frontend terminals separate while developing.
-- Extend tools by adding new classes in `ai-agent/tools/` and wiring them in `executor.py`.
+## 🔮 Future Scope
 
+* 🔗 Google Workspace Integration
+* 🌍 Browser Harness Integration
+* 🧠 Memory (RAG) Layer
+* 🤖 Autonomous Agent Behavior
+
+---
+
+## 📌 Notes
+
+* `.env` is excluded for security
+* Designed for extensibility
+* Built with system-level thinking
+
+---
+
+## 👨‍💻 Author
+
+Faheem
+
+---
+
+## ⭐ If you found this useful
+
+Give this repo a star 🌟
