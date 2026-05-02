@@ -13,7 +13,7 @@ function App() {
     setResult(null);
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/run-agent", {
+      const res = await axios.post( "https://unique-liberation-production.up.railway.app/run-agent", {
         goal: goal,
       });
       setResult(res.data);
